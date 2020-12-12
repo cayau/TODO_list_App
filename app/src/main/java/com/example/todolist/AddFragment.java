@@ -14,7 +14,6 @@ import androidx.navigation.fragment.NavHostFragment;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import org.json.JSONException;
@@ -22,7 +21,7 @@ import org.json.JSONObject;
 
 import static androidx.constraintlayout.widget.Constraints.TAG;
 
-public class FirstFragment extends Fragment {
+public class AddFragment extends Fragment {
 
     @Override
     public View onCreateView(
@@ -30,7 +29,7 @@ public class FirstFragment extends Fragment {
             Bundle savedInstanceState
     ) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_first, container, false);
+        return inflater.inflate(R.layout.fragment_add, container, false);
     }
 
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
@@ -39,9 +38,8 @@ public class FirstFragment extends Fragment {
         final TextView txtDesc = (TextView) view.findViewById(R.id.txtDesc);
         final TextView lblInfo = (TextView) view.findViewById(R.id.textview_first);
 
-        // Write a message to the database
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        final DatabaseReference myRef = database.getReference("todo_list");
+        FirebaseHelper fireB = new FirebaseHelper();
+        final DatabaseReference myRef = fireB.init("todo_list");
 
         // Read from the database
         myRef.addValueEventListener(new ValueEventListener() {
@@ -49,16 +47,9 @@ public class FirstFragment extends Fragment {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 // This method is called once with the initial value and again
                 // whenever data at this location is updated.
-                String value = dataSnapshot.getValue(String.class);
-                Log.d(TAG, "Value is: " + value);
-                if(value != null) {
-                    lblInfo.setText(value.toString());
-                    try {
-                        JSONObject jObject = new JSONObject(value.toString());
-                        Log.d(TAG, "JSON: " + jObject.getString("title"));
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
+                for (DataSnapshot child : dataSnapshot.getChildren())
+                {
+                    Log.d(TAG, "Value is: " + child.toString());
                 }
             }
 
@@ -69,7 +60,7 @@ public class FirstFragment extends Fragment {
             }
         });
 
-        view.findViewById(R.id.button_first).setOnClickListener(new View.OnClickListener() {
+        view.findViewById(R.id.btnDone).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 CharSequence name = txtName.getText();
@@ -80,12 +71,21 @@ public class FirstFragment extends Fragment {
                     obj.put("done", false);
                     obj.put("name", name.toString());
                     obj.put("desc", desc.toString());
-                    myRef.setValue(obj.toString());
+                    DatabaseReference dbRef = myRef.push();
+                    dbRef.setValue(obj.toString());
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
 
-                NavHostFragment.findNavController(FirstFragment.this)
+                NavHostFragment.findNavController(AddFragment.this)
+                        .navigate(R.id.action_FirstFragment_to_SecondFragment);
+            }
+        });
+
+        view.findViewById(R.id.btnCancel).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                NavHostFragment.findNavController(AddFragment.this)
                         .navigate(R.id.action_FirstFragment_to_SecondFragment);
             }
         });
