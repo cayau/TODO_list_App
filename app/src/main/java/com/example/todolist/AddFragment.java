@@ -19,6 +19,9 @@ import com.google.firebase.database.ValueEventListener;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import static androidx.constraintlayout.widget.Constraints.TAG;
 
 public class AddFragment extends Fragment {
@@ -36,41 +39,24 @@ public class AddFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         final TextView txtName = (TextView) view.findViewById(R.id.txtName);
         final TextView txtDesc = (TextView) view.findViewById(R.id.txtDesc);
-        final TextView lblInfo = (TextView) view.findViewById(R.id.textview_first);
 
         FirebaseHelper fireB = new FirebaseHelper();
         final DatabaseReference myRef = fireB.init("todo_list");
-
-        // Read from the database
-        myRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                // This method is called once with the initial value and again
-                // whenever data at this location is updated.
-                for (DataSnapshot child : dataSnapshot.getChildren())
-                {
-                    Log.d(TAG, "Value is: " + child.toString());
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError error) {
-                // Failed to read value
-                Log.w(TAG, "Failed to read value.", error.toException());
-            }
-        });
 
         view.findViewById(R.id.btnDone).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 CharSequence name = txtName.getText();
                 CharSequence desc = txtDesc.getText();
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy-hh-mm-ss");
+                String date = simpleDateFormat.format(new Date());
 
                 JSONObject obj = new JSONObject();
                 try {
                     obj.put("done", false);
                     obj.put("name", name.toString());
                     obj.put("desc", desc.toString());
+                    obj.put("date", date);
                     DatabaseReference dbRef = myRef.push();
                     dbRef.setValue(obj.toString());
                 } catch (JSONException e) {

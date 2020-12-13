@@ -1,18 +1,23 @@
 package com.example.todolist;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -27,6 +32,9 @@ import com.google.firebase.database.ValueEventListener;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static androidx.constraintlayout.widget.Constraints.TAG;
 
@@ -46,6 +54,8 @@ public class HomeFragment extends Fragment {
 
         final Context t = getActivity().getBaseContext();
         final TableLayout table = (TableLayout) view.findViewById(R.id.tblList);
+        final List<View> pedding = new ArrayList<View>();
+        final List<View> done = new ArrayList<View>();
 
         FirebaseHelper fireB = new FirebaseHelper();
         final DatabaseReference myRef = fireB.init("todo_list");
@@ -57,6 +67,8 @@ public class HomeFragment extends Fragment {
                 int d16 = (int) (getResources().getDisplayMetrics().density * 16);
                 int d8 = (int) (getResources().getDisplayMetrics().density * 8);
                 table.removeAllViews();
+                pedding.clear();
+                done.clear();
 
                 View divideri = new View(t);
                 int dividerHeight = (int) (getResources().getDisplayMetrics().density * 16); // 1dp to pixels
@@ -68,7 +80,6 @@ public class HomeFragment extends Fragment {
                 // whenever data at this location is updated.
                 for (DataSnapshot child : dataSnapshot.getChildren())
                 {
-                    Log.d(TAG, "Value is: " + child.getValue().getClass() );
                     try {
                         final String elementID = child.getKey().toString();
                         final JSONObject element = new JSONObject( child.getValue().toString() );
@@ -77,20 +88,27 @@ public class HomeFragment extends Fragment {
                         tblRow.setBackgroundColor(Color.parseColor("#FFFFFF"));
                         tblRow.setPadding(d16,d16,d16,d16);
                             CheckBox chkItem = new CheckBox(t);
-                            chkItem.setText(element.getString("name"));
                             Boolean checked = element.getBoolean("done");
                             chkItem.setChecked(checked);
-                            Typeface typeface = chkItem.getTypeface();
-                            chkItem.setTypeface(typeface, checked?Typeface.ITALIC:Typeface.BOLD);
-                            chkItem.setTextSize(checked?16:18);
+                            TextView txtname = new TextView(t);
+                            txtname.setText(element.getString("name"));
+                            Typeface typeface = txtname.getTypeface();
+                            txtname.setTypeface(typeface, checked?Typeface.ITALIC:Typeface.BOLD);
+                            txtname.setTextSize(checked?16:18);
                             if(checked)
-                                chkItem.setPaintFlags(Paint.STRIKE_THRU_TEXT_FLAG | Paint.ANTI_ALIAS_FLAG);
+                                txtname.setPaintFlags(Paint.STRIKE_THRU_TEXT_FLAG | Paint.ANTI_ALIAS_FLAG);
                         View divider = new View(t);
                         divider.setLayoutParams(params);
 
                         tblRow.addView(chkItem);
-                        table.addView(tblRow);
-                        table.addView(divider);
+                        tblRow.addView(txtname);
+                        if(checked){
+                            done.add(tblRow);
+                            done.add(divider);
+                        }else{
+                            pedding.add(tblRow);
+                            pedding.add(divider);
+                        }
 
                         chkItem.setOnClickListener(new View.OnClickListener() {
                             @Override
@@ -99,14 +117,14 @@ public class HomeFragment extends Fragment {
                                     Boolean checked = element.getBoolean("done");
                                     String name = element.getString("name");
                                     String desc = element.getString("desc");
-                                    Toast.makeText(getActivity(), "Task description: "+desc,
-                                            Toast.LENGTH_LONG).show();
+                                    Toast.makeText(getActivity(), "Task Done!, description: "+desc, Toast.LENGTH_LONG).show();
                                     DatabaseReference elementUpdate = myRef.child(elementID);
                                     JSONObject obj = new JSONObject();
                                     try {
                                         obj.put("done", !checked);
                                         obj.put("name", name);
                                         obj.put("desc", desc);
+                                        obj.put("date", element.getString("date"));
                                         elementUpdate.setValue(obj.toString() );
                                     } catch (JSONException e) {
                                         e.printStackTrace();
@@ -117,10 +135,26 @@ public class HomeFragment extends Fragment {
                             }
                         });
 
+                        tblRow.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Bundle bundle = new Bundle();
+                                bundle.putString("taskId", elementID);
+                                NavHostFragment.findNavController(HomeFragment.this).navigate(R.id.action_SecondFragment_to_detailFragment, bundle);
+                            }
+                        });
+
 
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
+                }
+
+                for (int i=0; i<pedding.size(); i++) {
+                    table.addView(pedding.get(i) );
+                }
+                for (int i=0; i<done.size(); i++) {
+                    table.addView(done.get(i) );
                 }
             }
 
