@@ -11,3 +11,11 @@ In the sample application you can:
 * Mark as don/undone a taks
 * Add new task with name, description and date
 * See task description and mark as done/undone from description 
+
+## Getting Started
+
+1.  Pull down the code locally.
+2.  Open Android Studio and select 'Open an existing Android Studio Project'
+3.  Navigate to checked out repository.
+4.  Inside 'TODO_list_app' folder select 'settings.gradle' file
+5.  Run the application.
