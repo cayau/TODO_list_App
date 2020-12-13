@@ -104,7 +104,7 @@
                     android:text="Cancel" />
 
                 <Button
-                    android:id="@+id/btnDone"
+                    android:id="@+id/btnDoneUndone"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
@@ -112,11 +112,12 @@
                     android:layout_marginTop="8dp"
                     android:layout_marginRight="16dp"
                     android:layout_marginBottom="8dp"
+                    android:layout_weight="1"
                     android:background="#FF5722"
                     android:gravity="center"
                     android:paddingLeft="8dp"
                     android:paddingRight="8dp"
-                    android:text="Mark as Done"
+                    android:text="Mark"
                     android:textColor="@color/cardview_light_background" />
 
             </LinearLayout>

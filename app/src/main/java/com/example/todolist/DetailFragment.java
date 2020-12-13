@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.TableLayout;
@@ -70,6 +71,7 @@ public class DetailFragment extends Fragment {
         final TextView txtName = (TextView) view.findViewById(R.id.txtName);
         final TextView txtDesc = (TextView) view.findViewById(R.id.txtDesc);
         final TextView txtDate = (TextView) view.findViewById(R.id.txtDate);
+        final Button btnDone_Undone = (Button) view.findViewById(R.id.btnDoneUndone);
 
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
@@ -86,6 +88,11 @@ public class DetailFragment extends Fragment {
                         txtName.setText(element.getString("name"));
                         txtDesc.setText(element.getString("desc"));
                         txtDate.setText(element.getString("date"));
+                        if(element.getBoolean("done")) {
+                            btnDone_Undone.setText("Mark as Undone");
+                        } else {
+                            btnDone_Undone.setText("Mark as Done");
+                        }
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -99,12 +106,12 @@ public class DetailFragment extends Fragment {
                 }
             });
 
-            view.findViewById(R.id.btnDone).setOnClickListener(new View.OnClickListener() {
+            view.findViewById(R.id.btnDoneUndone).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     JSONObject obj = new JSONObject();
                     try {
-                        obj.put("done", true);
+                        obj.put("done", (btnDone_Undone.getText()=="Mark as Done")?true:false);
                         obj.put("name",  txtName.getText());
                         obj.put("desc", txtDesc.getText());
                         obj.put("date", txtDate.getText());

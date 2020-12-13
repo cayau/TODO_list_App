@@ -117,7 +117,11 @@ public class HomeFragment extends Fragment {
                                     Boolean checked = element.getBoolean("done");
                                     String name = element.getString("name");
                                     String desc = element.getString("desc");
-                                    Toast.makeText(getActivity(), "Task Done!, description: "+desc, Toast.LENGTH_LONG).show();
+                                    if(checked){
+                                        Toast.makeText(getActivity(), "Task Undone!, description: " + desc, Toast.LENGTH_LONG).show();
+                                    } else {
+                                        Toast.makeText(getActivity(), "Task Done!, description: " + desc, Toast.LENGTH_LONG).show();
+                                    }
                                     DatabaseReference elementUpdate = myRef.child(elementID);
                                     JSONObject obj = new JSONObject();
                                     try {
