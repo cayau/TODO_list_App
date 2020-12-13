@@ -113,7 +113,7 @@
                     android:layout_marginRight="16dp"
                     android:layout_marginBottom="8dp"
                     android:layout_weight="1"
-                    android:background="#FF5722"
+                    android:background="@color/colorAccent"
                     android:gravity="center"
                     android:paddingLeft="8dp"
                     android:paddingRight="8dp"
