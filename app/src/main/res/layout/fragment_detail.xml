@@ -101,7 +101,7 @@
                     android:layout_marginBottom="8dp"
                     android:background="#cdcdcd"
                     android:gravity="center"
-                    android:text="Cancel" />
+                    android:text="Back" />
 
                 <Button
                     android:id="@+id/btnDoneUndone"
